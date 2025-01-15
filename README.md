@@ -8,3 +8,14 @@ Lumos is an intelligent tool designed to analyze your chat history, personal not
 	•	Summarize Effortlessly: Generate concise summaries from long conversations and notes.
 
 Lumos empowers you to discover, organize, and understand your information like never before. 🚀
+
+
+## Experiments
+
+| Description                                           | Nodes | Edges | Orphans |
+|-------------------------------------------------------|-------|-------|---------|
+| Original                                              | 133   | 54    | 70      |
+| +Entity Type Extraction                               | 77    | 57    | 12      |
+| +Entity Type Extraction +Node Merge                   | 76    | 57    | 12      |
+| +Entity Type Extraction +Chunk Title                  | 88    | 36    | 46      |
+| +Entity Type Extraction +Chunk Title +Chunk Size 1800 | 65    | 19    | 41      |
