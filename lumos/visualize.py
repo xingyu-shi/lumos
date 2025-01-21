@@ -29,7 +29,7 @@ def visualize_graph(graph: nx.Graph, path: str):
         # remove the " and ' in the entity_type
         # entity_type = entity_type.replace('"', '').replace("'", '')
         color = pick_color(entity_type)
-        title = "Entity Type: {}\nChunk:{}\nDescription:\n{}".format(data.get('entity_type'), data.get('source_id'), data.get('description')).replace(GRAPH_FIELD_SEP, "\n")
+        title = "Entity Type: {}\nDescription:\n{}\nChunk:{}".format(data.get('entity_type'), data.get('source_id'), data.get('description')).replace(GRAPH_FIELD_SEP, "\n")
         net.add_node(node,
                      label=node,
                      color=color,
@@ -38,7 +38,7 @@ def visualize_graph(graph: nx.Graph, path: str):
                      )
 
     for src, dst, data in graph.edges(data=True):
-        title = "Keywords: {}\n\nDescription:\n{}".format(data.get('keywords'), data.get('description')).replace(GRAPH_FIELD_SEP, "\n")
+        title = "Keywords: {}\nDescription:\n{}".format(data.get('keywords'), data.get('description')).replace(GRAPH_FIELD_SEP, "\n")
         net.add_edge(src, dst, description=data.get('description'), weighte=data.get('weight'), title=title)
 
     # net.from_nx(graph)
