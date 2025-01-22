@@ -8,5 +8,5 @@ args = parser.parse_args()
 
 if __name__=='__main__':
     # build_rag.sh('/Users/xingyushi/.notable')
-    build_rag('/Users/xingyushi/code/personal/lumos/Crawler/workspace')
-    # build_rag(args.source, args.include_exts)
+    # build_rag('/Users/xingyushi/code/personal/lumos/Crawler/workspace')
+    build_rag(args.source, args.include_exts)
