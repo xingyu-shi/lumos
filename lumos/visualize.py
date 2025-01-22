@@ -1,3 +1,4 @@
+import math
 import os
 
 import networkx as nx
@@ -7,18 +8,27 @@ from LightRAG.lightrag.prompt import GRAPH_FIELD_SEP
 from lumos.light_rag import config
 from lumos.colors import pick_color
 
+def scale_degree(degree):
+    return math.log2(degree + 1)
+
+def pretty(text: str):
+    if len(text) > 100:
+        return text[:100] + "..."
+    return text
+
 def visualize_graph(graph: nx.Graph, path: str):
     net = Network(notebook=True, filter_menu=True, cdn_resources='remote', height="1000px")
     # 设置节点大小的范围
     min_size = 10
-    max_size = 35
+    max_size = 40
 
     degree_dict: dict[str, int]
     degree_dict = dict(graph.degree())
     # 找出最大度和最小度
-    max_degree = max(degree_dict.values())
-    min_degree = min(degree_dict.values())
+    max_degree = scale_degree(max(degree_dict.values()))
+    min_degree = scale_degree(min(degree_dict.values()))
     def get_node_size(degree: int):
+        degree = scale_degree(degree)
         return (degree - min_degree) / (max_degree - min_degree) * (max_size - min_size) + min_size
 
     orphan_nodes = [node for node in graph.nodes if graph.degree(node) == 0]
@@ -29,7 +39,7 @@ def visualize_graph(graph: nx.Graph, path: str):
         # remove the " and ' in the entity_type
         # entity_type = entity_type.replace('"', '').replace("'", '')
         color = pick_color(entity_type)
-        title = "Entity Type: {}\nDescription:\n{}\nChunk:{}".format(data.get('entity_type'), data.get('description'), data.get('source_id')).replace(GRAPH_FIELD_SEP, "\n")
+        title = "Entity Type: {}\nDescription:\n{}\nChunk:{}".format(data.get('entity_type'), data.get('description'), pretty(data.get('source_id'))).replace(GRAPH_FIELD_SEP, "\n")
         net.add_node(node,
                      label=node,
                      color=color,
@@ -48,4 +58,4 @@ if __name__ == '__main__':
     graphml_path = os.path.join(config.WORKING_DIR, "graph_chunk_entity_relation.graphml")
     G = nx.read_graphml(graphml_path)
 
-    visualize_graph(G, os.path.join(config.WORKING_DIR, "example.html"))
+    visualize_graph(G, os.path.join(config.WORKING_DIR, "visualize.html"))
