@@ -171,4 +171,5 @@ cython_debug/
 .pypirc
 
 workspace*/
+olh_workspace*/
 .idea/
