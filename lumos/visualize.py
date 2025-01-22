@@ -4,7 +4,7 @@ import networkx as nx
 from pyvis.network import Network
 
 from LightRAG.lightrag.prompt import GRAPH_FIELD_SEP
-from lumos import config
+from lumos.light_rag import config
 from lumos.colors import pick_color
 
 def visualize_graph(graph: nx.Graph, path: str):
@@ -29,7 +29,7 @@ def visualize_graph(graph: nx.Graph, path: str):
         # remove the " and ' in the entity_type
         # entity_type = entity_type.replace('"', '').replace("'", '')
         color = pick_color(entity_type)
-        title = "Entity Type: {}\nDescription:\n{}\nChunk:{}".format(data.get('entity_type'), data.get('source_id'), data.get('description')).replace(GRAPH_FIELD_SEP, "\n")
+        title = "Entity Type: {}\nDescription:\n{}\nChunk:{}".format(data.get('entity_type'), data.get('description'), data.get('source_id')).replace(GRAPH_FIELD_SEP, "\n")
         net.add_node(node,
                      label=node,
                      color=color,
@@ -45,7 +45,7 @@ def visualize_graph(graph: nx.Graph, path: str):
     net.show(path)
 
 if __name__ == '__main__':
-    graphml_path = os.path.join(config.BASEDIR, config.WORKING_DIR, "graph_chunk_entity_relation.graphml")
+    graphml_path = os.path.join(config.WORKING_DIR, "graph_chunk_entity_relation.graphml")
     G = nx.read_graphml(graphml_path)
 
-    visualize_graph(G, os.path.join(config.BASEDIR, config.WORKING_DIR, "example.html"))
+    visualize_graph(G, os.path.join(config.WORKING_DIR, "example.html"))

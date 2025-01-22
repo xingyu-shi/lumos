@@ -3,10 +3,23 @@ import os
 from LightRAG.lightrag import LightRAG
 from LightRAG.lightrag.llm import gpt_4o_mini_complete, openai_embedding, gpt_4o_complete
 from LightRAG.lightrag.utils import EmbeddingFunc
-from lumos import config
 
-llm_complete = gpt_4o_mini_complete
+# ================ config ====================
+class CFG:
+
+    WORKSPACE = "workspace_cas_wiki_gpt4o_mini"
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    ENV_DIR = os.path.join(BASE_DIR, "../.env")
+    WORKING_DIR = os.path.join(BASE_DIR, "../" , WORKSPACE)
+
+    if not os.path.exists(WORKING_DIR):
+        os.mkdir(WORKING_DIR)
+    CHUNK_TOKEN_SIZE = 1200
+
+# ================ end config ====================
+config = CFG()
 # llm_complete = gpt_4o_complete
+llm_complete = gpt_4o_mini_complete
 
 rag = LightRAG(
     working_dir=config.WORKING_DIR,

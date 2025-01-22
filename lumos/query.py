@@ -2,9 +2,9 @@ from LightRAG.lightrag import LightRAG, QueryParam
 
 from dotenv import load_dotenv
 
-from lumos.rag import rag
+from lumos.light_rag import rag, config
 
-load_dotenv('../.env')
+load_dotenv(config.ENV_DIR)
 
 # query = "mitigation api目前有什么问题呢？"
 query = "现在每个公司，每分钟最大可以发送多少个mitigation action？"
