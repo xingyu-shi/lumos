@@ -16,11 +16,14 @@ def pretty(text: str):
         return text[:100] + "..."
     return text
 
+degree_threshold = 3
+
+# 设置节点大小的范围
+min_size = 10
+max_size = 40
+
 def visualize_graph(graph: nx.Graph, path: str):
     net = Network(notebook=True, filter_menu=True, cdn_resources='remote', height="1000px")
-    # 设置节点大小的范围
-    min_size = 10
-    max_size = 40
 
     degree_dict: dict[str, int]
     degree_dict = dict(graph.degree())
@@ -59,3 +62,6 @@ if __name__ == '__main__':
     G = nx.read_graphml(graphml_path)
 
     visualize_graph(G, os.path.join(config.WORKING_DIR, "visualize.html"))
+
+    # nodes_to_keep = [node for node, degree in G.degree() if degree > degree_threshold]
+    # visualize_graph(G.subgraph(nodes_to_keep), os.path.join(config.WORKING_DIR, f"visualize_mini_{degree_threshold}.html"))
