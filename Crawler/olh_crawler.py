@@ -2,6 +2,7 @@ import os
 import pickle
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -18,7 +19,7 @@ from selenium.webdriver.support import expected_conditions as EC
 load_dotenv()
 
 lock = threading.Lock()
-WORKING_DIR = "olh_workspace_v2"
+WORKING_DIR = "workspace_ems"
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 if not os.path.exists(os.path.join(BASEDIR, WORKING_DIR)):
     os.mkdir(os.path.join(BASEDIR, WORKING_DIR))
@@ -50,7 +51,7 @@ else:
 
 def add_to_crawler_waitlist(urls):
     with lock:
-        for url in urls if isinstance(urls, list) else [urls]:
+        for url in urls if isinstance(urls, (list, set)) else [urls]:
             if not is_crawled(url) and not url in crawl_list:
                 crawl_list.add(url)
         with open(os.path.join(BASEDIR, WORKING_DIR, "_to_crawl.pkl"), "wb") as f:
@@ -86,7 +87,7 @@ def scraper(url: str):
                 if not 'href' in a_tag.attrs:
                     continue
                 if not a_tag['href'].startswith('http'):
-                    a_tag['href'] = f"{url.rpartition('/')[0]}/{a_tag['href']}"
+                    a_tag['href'] = urljoin(url, a_tag['href'])
                 hrefs.append(a_tag['href'])
 
         for main in soup.find_all('div', attrs={"id": "wh-content"}):
@@ -94,7 +95,7 @@ def scraper(url: str):
                 if not 'href' in a_tag.attrs:
                     continue
                 if not a_tag['href'].startswith('http'):
-                    a_tag['href'] = f"{url.rpartition('/')[0]}/{a_tag['href']}"
+                    a_tag['href'] = urljoin(url, a_tag['href'])
                 hrefs.append(a_tag['href'])
 
         for main in soup.find_all('div', attrs={"class": "article-menu"}):
@@ -102,7 +103,7 @@ def scraper(url: str):
                 if not 'href' in a_tag.attrs:
                     continue
                 if not a_tag['href'].startswith('http'):
-                    a_tag['href'] = f"{url.rpartition('/')[0]}/{a_tag['href']}"
+                    a_tag['href'] = urljoin(url, a_tag['href'])
                 hrefs.append(a_tag['href'])
 
         add_to_crawler_waitlist(hrefs)
@@ -201,10 +202,12 @@ def scraper_(url):
 
 # 使用爬虫抓取一个目标网站
 if __name__ == "__main__":
-    add_to_crawler_waitlist("https://docs.trendmicro.com/en-us/documentation/cloud-app-security/")
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    print("Starting crawler, crawled: ", len(crawled), "to crawl: ", len(crawl_list))
+    # add_to_crawler_waitlist("https://docs.trendmicro.com/en-us/documentation/cloud-app-security/")
+    add_to_crawler_waitlist("https://docs.trendmicro.com/en-us/documentation/email-security/")
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = []
         while len(crawl_list) > 0:
             target_url = crawl_list.pop()
             print(f"processing {target_url}, total: {len(crawl_list)}")
-            executor.submit(scraper_, target_url)
-
+            futures.append(executor.submit(scraper_, target_url))
