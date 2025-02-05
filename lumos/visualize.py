@@ -16,15 +16,31 @@ def pretty(text: str):
         return text[:100] + "..."
     return text
 
-degree_threshold = 3
+degree_threshold = 4
 
 # 设置节点大小的范围
 min_size = 10
 max_size = 40
 
-def visualize_graph(graph: nx.Graph, path: str):
-    net = Network(notebook=True, filter_menu=True, cdn_resources='remote', height="1000px")
-
+def graph_to_html(graph: nx.Graph):
+    net = Network(notebook=False, filter_menu=True, cdn_resources='remote', height="1000px")
+    # net.set_options("""
+    # {
+    #   "physics": {
+    #     "enabled": true,
+    #     "stabilization": {
+    #       "enabled": true,
+    #       "iterations": 1000
+    #     },
+    #     "barnesHut": {
+    #       "gravitationalConstant": -5000,
+    #       "damping": 0.5,
+    #       "avoidOverlap": 1
+    #     },
+    #     "minVelocity": 0.2
+    #   }
+    # }
+    # """)
     degree_dict: dict[str, int]
     degree_dict = dict(graph.degree())
     # 找出最大度和最小度
@@ -52,16 +68,18 @@ def visualize_graph(graph: nx.Graph, path: str):
 
     for src, dst, data in graph.edges(data=True):
         title = "Keywords: {}\nDescription:\n{}".format(data.get('keywords'), data.get('description')).replace(GRAPH_FIELD_SEP, "\n")
-        net.add_edge(src, dst, description=data.get('description'), weighte=data.get('weight'), title=title)
+        net.add_edge(src, dst, description=data.get('description'), weight=data.get('weight'), title=title)
+    return net.generate_html()
 
-    # net.from_nx(graph)
-    net.show(path)
+def visualize_graph(graph: nx.Graph, path: str):
+    with open(path, 'w') as f:
+        f.write(graph_to_html(graph))
 
 if __name__ == '__main__':
     graphml_path = os.path.join(config.WORKING_DIR, "graph_chunk_entity_relation.graphml")
     G = nx.read_graphml(graphml_path)
 
-    visualize_graph(G, os.path.join(config.WORKING_DIR, "visualize.html"))
+    # visualize_graph(G, os.path.join(config.WORKING_DIR, "visualize_cas_ems_o.html"))
 
-    # nodes_to_keep = [node for node, degree in G.degree() if degree > degree_threshold]
-    # visualize_graph(G.subgraph(nodes_to_keep), os.path.join(config.WORKING_DIR, f"visualize_mini_{degree_threshold}.html"))
+    nodes_to_keep = [node for node, degree in G.degree() if degree > degree_threshold]
+    visualize_graph(G.subgraph(nodes_to_keep), os.path.join(config.WORKING_DIR, f"visualize_mini_cas_ems_{degree_threshold}.html"))

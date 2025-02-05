@@ -41,13 +41,14 @@ Summary of email body
 [Answer Request]
 Is CAS able to the above information sync with SIEM?
 """
-# print(rag.query(query, param=QueryParam(mode="hybrid")))
+# print(rag.query(query, param=QueryParam(mode="hybrid", need_context_graph=True, need_context=True)))
 # print("============================= hybrid =======================")
 # print(rag.query(query, param=QueryParam(mode="local")))
 # print("============================= local =======================")
 # print(rag.query(query, param=QueryParam(mode="global")))
 # print("============================= global =======================")
-# print(rag.query(query, param=QueryParam(mode="naive")))
+# print(rag.query(query, param=QueryParam(mode="naive", need_context_graph=True, need_context=True)))
 # print("============================= native =======================")
-print(rag.query(query, param=QueryParam(mode="mix")))
+print(rag.query(query, param=QueryParam(mode="mix", need_context_graph=True, need_context=True)))
+# print(rag.query("", param=QueryParam(mode="mix")))
 print("============================= mix =======================")
