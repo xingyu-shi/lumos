@@ -1,7 +1,4 @@
-from dotenv import load_dotenv
 from lumos.light_rag import rag, config
-
-load_dotenv(config.ENV_DIR)
 
 if __name__ == '__main__':
     rag.pre_load_embeddings()

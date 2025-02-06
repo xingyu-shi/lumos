@@ -1,21 +1,59 @@
-import logging
+from typing import List, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-from dotenv import load_dotenv
 
 from LightRAG.lightrag import QueryParam
-from lumos.light_rag import rag, config
-
-load_dotenv(config.ENV_DIR)
+from LightRAG.lightrag.utils import logger
+from lumos.light_rag import rag
 
 app = FastAPI()
+#
+# class QueryReqParamModeDto(str, Enum):
+#     Hybrid: str = 'hybrid'
+#     Local: str = 'local'
+#     Global: str = 'global'
+#     Naive: str = 'naive'
+#     Mix: str = 'mix'
+#
+#     def __str__(self):
+#         return self.value
+#     @classmethod
+#     def _missing_(cls, value):
+#         return cls.Global
+#
+# class QueryReqParamDto(BaseModel):
+#     mode: Optional[QueryReqParamModeDto] = QueryReqParamModeDto.Global
+#     need_context_graph: Optional[bool] = False
+#     need_context: Optional[bool] = False
+#     top_k: Optional[int] = 20
 
 class QueryReqDto(BaseModel):
     query: str
-    param: QueryParam = QueryParam(mode="mix", need_context_graph=True, need_context=True, top_k=20)
+    param: Optional[QueryParam] = QueryParam(mode="global", need_context_graph=False, need_context=False, top_k=20)
 
-@app.post("/query/seg")
+class QueryNodeDto(BaseModel):
+    id: str
+    entity_name: str
+    distance: float
+    created_at: float
+
+class QueryEdgeDto(BaseModel):
+    id: str
+    src_id: str
+    tgt_id: str
+    distance: float
+    created_at: float
+
+class QueryRespDto(BaseModel):
+    response: str
+    nodes: Optional[List[QueryNodeDto]] = None
+    edges: Optional[List[QueryEdgeDto]] = None
+    kg_context: Optional[str] = None
+    vector_context: Optional[str] = None
+
+
+@app.post("/query/seg", response_model=QueryRespDto, response_model_exclude_none=True)
 def query(query_req: QueryReqDto):
     query_req.query = f"""
 [Background]
@@ -26,10 +64,10 @@ If you think the question is not clear, please ask for clarification.
 [Question]
 {query_req.query}
 """
-    logging.debug(query_req)
-    return rag.query(query_req.query, param=query_req.param)
+    logger.debug(query_req)
+    return QueryRespDto.model_validate(rag.query(query_req.query, param=query_req.param))
 
-@app.post("/query")
-def query(query_req: QueryReqDto):
-    logging.debug(query_req)
-    return rag.query(query_req.query, param=query_req.param)
+@app.post("/query", response_model=QueryRespDto, response_model_exclude_none=True)
+def query(query_req: QueryReqDto) -> QueryRespDto:
+    logger.debug(query_req)
+    return QueryRespDto.model_validate(rag.query(query_req.query, param=query_req.param))

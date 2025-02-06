@@ -1,8 +1,5 @@
 import os
-from dotenv import load_dotenv
 from lumos.light_rag import rag, config
-
-load_dotenv(config.ENV_DIR)
 
 def remove_ext(filename):
     _name, _ext = os.path.splitext(filename)
