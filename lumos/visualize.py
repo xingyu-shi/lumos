@@ -79,7 +79,7 @@ if __name__ == '__main__':
     graphml_path = os.path.join(config.WORKING_DIR, "graph_chunk_entity_relation.graphml")
     G = nx.read_graphml(graphml_path)
 
-    # visualize_graph(G, os.path.join(config.WORKING_DIR, "visualize_cas_ems_o.html"))
+    visualize_graph(G, os.path.join(config.WORKING_DIR, "visualize_cas_ems_o.html"))
 
-    nodes_to_keep = [node for node, degree in G.degree() if degree > degree_threshold]
-    visualize_graph(G.subgraph(nodes_to_keep), os.path.join(config.WORKING_DIR, f"visualize_mini_cas_ems_{degree_threshold}.html"))
+    # nodes_to_keep = [node for node, degree in G.degree() if degree > degree_threshold]
+    # visualize_graph(G.subgraph(nodes_to_keep), os.path.join(config.WORKING_DIR, f"visualize_mini_cas_ems_{degree_threshold}.html"))

@@ -6,7 +6,7 @@ from LightRAG.lightrag.utils import EmbeddingFunc
 
 # ================ config ====================
 class CFG:
-    WORKSPACE = "workspace_cas_gpt4o_mini"
+    WORKSPACE = "workspace_cas_ems_gpt4o_mini"
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     ENV_DIR = os.path.join(BASE_DIR, "../.env")
     WORKING_DIR = os.path.join(BASE_DIR, "../" , WORKSPACE)
