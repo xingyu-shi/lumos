@@ -65,3 +65,11 @@ rag = LightRAG(
     # enable_llm_cache = False,
     # llm_model_func=gpt_4o_complete
 )
+
+def get_related_nodes_edges(nodes, edges):
+    node_set = set([node.entity_name for node in nodes])
+    for edge in edges:
+        node_set.add(edge.src_id)
+        node_set.add(edge.tgt_id)
+    sub_graph = rag.chunk_entity_relation_graph.subgraph(list(node_set))
+    return list(sub_graph.nodes), list(sub_graph.edges)

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from LightRAG.lightrag import QueryParam
 from LightRAG.lightrag.utils import logger
-from lumos.light_rag import rag
+from lumos.light_rag import rag, get_related_nodes_edges
 
 app = FastAPI()
 #
@@ -47,8 +47,8 @@ class QueryEdgeDto(BaseModel):
 
 class QueryRespDto(BaseModel):
     response: str
-    nodes: Optional[List[QueryNodeDto]] = None
-    edges: Optional[List[QueryEdgeDto]] = None
+    nodes: Optional[List[QueryNodeDto|str]] = []
+    edges: Optional[List[QueryEdgeDto|str]] = []
     kg_context: Optional[str] = None
     vector_context: Optional[str] = None
 
@@ -65,9 +65,13 @@ If you think the question is not clear, please ask for clarification.
 {query_req.query}
 """
     logger.debug(query_req)
-    return QueryRespDto.model_validate(rag.query(query_req.query, param=query_req.param))
+    response = QueryRespDto.model_validate(rag.query(query_req.query, param=query_req.param))
+    response.nodes, response.edges = get_related_nodes_edges(response.nodes, response.edges)
+    return response
 
 @app.post("/query", response_model=QueryRespDto, response_model_exclude_none=True)
 def query(query_req: QueryReqDto) -> QueryRespDto:
     logger.debug(query_req)
-    return QueryRespDto.model_validate(rag.query(query_req.query, param=query_req.param))
+    response = QueryRespDto.model_validate(rag.query(query_req.query, param=query_req.param))
+    response.nodes, response.edges = get_related_nodes_edges(response.nodes, response.edges)
+    return response
