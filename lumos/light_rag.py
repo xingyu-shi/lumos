@@ -62,7 +62,7 @@ rag = LightRAG(
     },
     chunk_token_size=config.CHUNK_TOKEN_SIZE,
     enable_embedding_func_cache = True,
-    # enable_llm_cache = False,
+    enable_llm_cache = False,
     # llm_model_func=gpt_4o_complete
 )
 
