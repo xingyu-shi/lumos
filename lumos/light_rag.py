@@ -1,15 +1,20 @@
 import os
+from typing import Optional, List
+
+from openai import BaseModel
 
 from LightRAG.lightrag import LightRAG
 from LightRAG.lightrag.llm import openai_embedding, openai_complete_if_cache, GPTKeywordExtractionFormat
 from LightRAG.lightrag.utils import EmbeddingFunc
 from dotenv import load_dotenv
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+load_dotenv(os.path.join(BASE_DIR, "../.env"))
+
 # ================ config ====================
 class CFG:
-    WORKSPACE = "workspace_cas_ems_gpt4o_mini"
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    ENV_DIR = os.path.join(BASE_DIR, "../.env")
+    WORKSPACE = os.environ.get("WORKSPACE", "workspace")
     WORKING_DIR = os.path.join(BASE_DIR, "../" , WORKSPACE)
 
     if not os.path.exists(WORKING_DIR):
@@ -18,7 +23,6 @@ class CFG:
 
 # ================ end config ====================
 config = CFG()
-load_dotenv(config.ENV_DIR)
 
 def get_llm_complete_func(model, base_url, api_key=None):
     async def __complete(prompt, system_prompt=None, history_messages=[],
@@ -65,6 +69,28 @@ rag = LightRAG(
     enable_llm_cache = False,
     # llm_model_func=gpt_4o_complete
 )
+
+class QueryNode(BaseModel):
+    id: str
+    entity_name: str
+    distance: float
+    created_at: float
+
+class QueryEdge(BaseModel):
+    id: str
+    src_id: str
+    tgt_id: str
+    distance: float
+    created_at: float
+
+class QueryResp(BaseModel):
+    response: Optional[str] = None
+    nodes: Optional[List[QueryNode]] = []
+    edges: Optional[List[QueryEdge]] = []
+    kg_context: Optional[str] = None
+    vector_context: Optional[str] = None
+    prompt: Optional[str] = None
+
 
 def get_related_nodes_edges(nodes, edges):
     node_set = set([node.entity_name for node in nodes])
