@@ -83,11 +83,16 @@ class QueryEdge(BaseModel):
     distance: float
     created_at: float
 
+class QueryKGContext(BaseModel):
+    entities: Optional[List]
+    relations: Optional[List]
+    text_units: Optional[List]
+
 class QueryResp(BaseModel):
     response: Optional[str] = None
     nodes: Optional[List[QueryNode]] = []
     edges: Optional[List[QueryEdge]] = []
-    kg_context: Optional[str] = None
+    kg_context: Optional[QueryKGContext] = None
     vector_context: Optional[str] = None
     prompt: Optional[str] = None
 
