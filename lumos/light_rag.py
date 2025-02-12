@@ -65,8 +65,8 @@ rag = LightRAG(
         "entity_types": ["organization", "person", "geo", "event", "category", "technical-term"],
     },
     chunk_token_size=config.CHUNK_TOKEN_SIZE,
-    enable_embedding_func_cache = True,
-    enable_llm_cache = False,
+    enable_embedding_func_cache = False,
+    enable_llm_cache = True,
     # llm_model_func=gpt_4o_complete
 )
 
@@ -103,4 +103,23 @@ def get_related_nodes_edges(nodes, edges):
         node_set.add(edge.src_id)
         node_set.add(edge.tgt_id)
     sub_graph = rag.chunk_entity_relation_graph.subgraph(list(node_set))
-    return list(sub_graph.nodes), list(sub_graph.edges)
+    nodes = [{
+        "id": node,
+        "text": data.get('description'),
+        "data":{
+            "entity_type": data.get('entity_type'),
+            "source_id": data.get('source_id')[:80],
+        }
+    } for node, data in sub_graph.nodes(data=True)]
+    edges = [{
+        "from": src,
+        "to": tgt,
+        "text": data.get('description'),
+        "isHideArrow": True,
+        "data": {
+            "keywords": data.get('keywords'),
+            "weight": data.get('weight'),
+            "source_id": data.get('source_id')[:80],
+        }
+    } for src, tgt, data in sub_graph.edges(data=True)]
+    return nodes, edges

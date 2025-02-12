@@ -22,8 +22,8 @@ class QueryRespVectorContextDto(BaseModel):
 
 class QueryRespDto(BaseModel):
     response: str = None
-    nodes: Optional[List[str]] = []
-    edges: Optional[List[List[str]]] = []
+    nodes: Optional[List[dict]] = []
+    edges: Optional[List[dict]] = []
     kg_context: Optional[QueryKGContext] = None
     vector_context: Optional[List[QueryRespVectorContextDto]] = None
 
