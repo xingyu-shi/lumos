@@ -42,7 +42,7 @@ async def _query(query_req: QueryReqDto):
     vector_context = q_response.vector_context.split("--New Chunk--") if q_response.vector_context else []
     vector_context = _format_vector_context(vector_context)
 
-    if len(q_response.kg_context.text_units) != 0:
+    if q_response.kg_context and len(q_response.kg_context.text_units) != 0:
         vector_context.extend(_format_vector_context([line[1] for line in q_response.kg_context.text_units[1:]]))
 
     response = QueryRespDto(
@@ -70,6 +70,14 @@ If you think the question is not clear, please ask for clarification.
 @router.post("/query", response_model=QueryRespDto, response_model_exclude_none=True)
 async def query(query_req: QueryReqDto) -> QueryRespDto:
     logger.debug(query_req)
+    f"""
+[Background]
+Please help me with the following question.
+Make sure to provide the most Accurate, Definite information.
+If you think the question is not clear, please ask for clarification.
+[Question]
+{query_req.query}
+    """
     return await _query(query_req)
 
 app.add_middleware(CORSMiddleware, allow_origins="*", allow_methods="*")
