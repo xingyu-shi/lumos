@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .color-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .color-box {
+            width: 50px;
+            height: 70px; /* Increased height to accommodate color code */
+            border: 1px solid #ccc;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .color-box:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .color-code {
+            position: absolute;
+            bottom: 5px; /* Positioned at the bottom of the color box */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.8); /* Background for better readability */
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Visualization</h1>
+    <input type="text" id="colorInput" placeholder="Enter color codes separated by commas or spaces">
+    <button onclick="addColors()">Add Colors</button>
+    <div class="color-container" id="colorContainer"></div>
+
+    <script>
+        function addColors() {
+            const colorInput = document.getElementById('colorInput').value;
+            // Split colors by comma or space
+            const colors = colorInput.split(/[\s,]+/).filter(color => color.trim() !== '');
+            const colorContainer = document.getElementById('colorContainer');
+
+            // Clear existing color boxes
+            colorContainer.innerHTML = '';
+
+            colors.forEach(color => {
+                if (isValidColor(color)) {
+                    const colorBox = document.createElement('div');
+                    colorBox.classList.add('color-box');
+                    colorBox.style.backgroundColor = color;
+
+                    const colorCode = document.createElement('div');
+                    colorCode.classList.add('color-code');
+                    colorCode.textContent = color;
+
+                    colorBox.appendChild(colorCode);
+                    colorContainer.appendChild(colorBox);
+                } else {
+                    alert(`Invalid color code: ${color}`);
+                }
+            });
+        }
+
+        function isValidColor(color) {
+            const s = new Option().style;
+            s.color = color;
+            return s.color !== '';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic Color Palette</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .color-item {
+            height: 80px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .color-item:hover {
+            transform: scale(1.05);
+        }
+        .color-text {
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            font-size: 12px;
+            word-break: break-all;
+        }
+        .input-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 98%;
+            height: 100px;
+            padding: 10px;
+            font-family: monospace;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #4a86e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #3c78d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-container">
+        <h2>Dynamic Color Palette</h2>
+        <textarea id="colorInput" placeholder="Enter HEX colors, separated by commas or spaces..."></textarea>
+        <button onclick="updateColors()">Update Colors</button>
+    </div>
+    <div class="container" id="colorContainer">
+        <!-- Color items will be dynamically added here -->
+    </div>
+
+    <script>
+        function updateColors() {
+            // Get the input value
+            const input = document.getElementById("colorInput").value.trim();
+            if (!input) {
+                alert("Please enter some HEX colors!");
+                return;
+            }
+
+            // Split the input into an array of HEX values
+            const hexValues = input.split(/[,\s]+/).filter(val => val.trim() !== "");
+
+            // Validate HEX values
+            const validHexValues = hexValues.filter(val => /^#([0-9A-Fa-f]{3}){1,2}$/.test(val));
+            if (validHexValues.length === 0) {
+                alert("No valid HEX colors found! Please use the format #RRGGBB or #RGB.");
+                return;
+            }
+
+            // Clear the container
+            const container = document.getElementById("colorContainer");
+            container.innerHTML = "";
+
+            // Add color items to the container
+            validHexValues.forEach(hex => {
+                const colorItem = document.createElement("div");
+                colorItem.className = "color-item";
+                colorItem.style.backgroundColor = hex;
+
+                const colorText = document.createElement("div");
+                colorText.className = "color-text";
+                colorText.textContent = hex;
+
+                colorItem.appendChild(colorText);
+                container.appendChild(colorItem);
+            });
+        }
+    </script>
+</body>
+</html>

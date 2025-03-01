@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Color Palette Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .color-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .color-block {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .color-block:hover {
+            transform: scale(1.1);
+        }
+        .color-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 0;
+            border-radius: 4px;
+        }
+        input {
+            width: 600px;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="colorInput" placeholder="请输入颜色代码，用逗号分隔...">
+    <button onclick="generateColors()">生成颜色</button>
+    <div class="color-container" id="colorContainer"></div>
+
+    <script>
+        function generateColors() {
+            const colorInput = document.getElementById('colorInput');
+            const colors = colorInput.value.split(',').map(c => c.trim());
+
+            const container = document.getElementById('colorContainer');
+            container.innerHTML = '';
+
+            colors.forEach(color => {
+                if (isValidColor(color)) {
+                    const div = document.createElement('div');
+                    div.className = 'color-block';
+                    div.style.backgroundColor = color;
+
+                    const label = document.createElement('div');
+                    label.className = 'color-label';
+                    label.textContent = color.toUpperCase();
+
+                    div.appendChild(label);
+                    container.appendChild(div);
+
+                    // 添加复制功能
+                    div.addEventListener('click', () => {
+                        navigator.clipboard.writeText(color);
+                        alert('已复制颜色代码: ' + color.toUpperCase());
+                    });
+                }
+            });
+        }
+
+        function isValidColor(color) {
+            return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(color);
+        }
+
+        // 页面加载时自动生成颜色
+        window.onload = generateColors;
+    </script>
+</body>
+</html>

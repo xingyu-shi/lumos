@@ -28,22 +28,38 @@ class QueryRespDto(BaseModel):
     vector_context: Optional[List[QueryRespVectorContextDto]] = None
 
 def _format_vector_context(vector_context: List):
+    """
+    :param vector_context: List[dict] of vector context with keys (content, created_at)
+    :return:
+    """
     return [
         QueryRespVectorContextDto(
-            title=ctx[:80].replace("\n", ""),
+            title=ctx['content'][:80].replace("\n", ""),
             id=str(idx),
-            text=ctx
+            text=ctx['content']
         ) for idx, ctx in enumerate(vector_context)]
+
+def _csv_list_to_dict(csv_list: List):
+    if not csv_list:
+        return []
+
+    keys = csv_list[0]
+    values = csv_list[1:]
+    return [dict(zip(keys, value)) for value in values]
 
 async def _query(query_req: QueryReqDto):
     q_response = await rag.aquery(query_req.query, param=query_req.param)
     q_response = QueryResp.model_validate(q_response)
     nodes, edges = get_related_nodes_edges(q_response.nodes, q_response.edges)
-    vector_context = q_response.vector_context.split("--New Chunk--") if q_response.vector_context else []
+    vector_context = q_response.vector_context if q_response.vector_context else []
     vector_context = _format_vector_context(vector_context)
 
+    q_response.kg_context.entities = _csv_list_to_dict(q_response.kg_context.entities)
+    q_response.kg_context.relations = _csv_list_to_dict(q_response.kg_context.relations)
+    q_response.kg_context.text_units = _csv_list_to_dict(q_response.kg_context.text_units)
+
     if q_response.kg_context and len(q_response.kg_context.text_units) != 0:
-        vector_context.extend(_format_vector_context([line[1] for line in q_response.kg_context.text_units[1:]]))
+        vector_context.extend(_format_vector_context(q_response.kg_context.text_units))
 
     response = QueryRespDto(
         response=q_response.response,
