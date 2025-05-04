@@ -5,7 +5,7 @@ from LightRAG.lightrag.llm import gpt_4o_mini_complete, openai_embedding
 from LightRAG.lightrag.utils import EmbeddingFunc
 
 from dotenv import load_dotenv
-load_dotenv('../.env')
+load_dotenv('../lumos/.env')
 
 WORKING_DIR = "workspace/dickens"
 

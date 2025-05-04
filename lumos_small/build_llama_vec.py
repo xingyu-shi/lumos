@@ -1,6 +1,7 @@
 import os
 
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Document
+from llama_index.core.postprocessor import SentenceTransformerRerank, LLMRerank
 
 from lumos.utils import iter_documents
 import logging
@@ -28,6 +29,7 @@ Settings.llm = Ollama(temperature=0,
                       keep_alive=True)
 Settings.embed_model = OllamaEmbedding(model_name=os.environ.get("EMBEDDING_MODEL"),
                                       keep_alive=True)
+from llama_index.extractors.entity import EntityExtractor
 Settings.chunk_size = 512
 
 documents = [Document(text=document.text, metadata=document.meta_data) for document in iter_documents('/Users/xingyushi/.notable/notes/CAS Feature - Mitigation API.md')]

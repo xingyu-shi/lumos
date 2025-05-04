@@ -54,9 +54,10 @@ async def _query(query_req: QueryReqDto):
     vector_context = q_response.vector_context if q_response.vector_context else []
     vector_context = _format_vector_context(vector_context)
 
-    q_response.kg_context.entities = _csv_list_to_dict(q_response.kg_context.entities)
-    q_response.kg_context.relations = _csv_list_to_dict(q_response.kg_context.relations)
-    q_response.kg_context.text_units = _csv_list_to_dict(q_response.kg_context.text_units)
+    if q_response.kg_context:
+        q_response.kg_context.entities = _csv_list_to_dict(q_response.kg_context.entities)
+        q_response.kg_context.relations = _csv_list_to_dict(q_response.kg_context.relations)
+        q_response.kg_context.text_units = _csv_list_to_dict(q_response.kg_context.text_units)
 
     if q_response.kg_context and len(q_response.kg_context.text_units) != 0:
         vector_context.extend(_format_vector_context(q_response.kg_context.text_units))
