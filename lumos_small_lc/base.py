@@ -1,18 +1,17 @@
 import os
-import re
 
 import dotenv
-from langchain_core.messages import AIMessage
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_ollama import ChatOllama
 from langchain_ollama import OllamaEmbeddings
-
-from lumos_small_lc import samples
 
 dotenv.load_dotenv()
 
 llm = ChatOllama(
     model=os.environ["CHAT_MODEL"],
+)
+llm_with_vision = ChatOllama(
+    model=os.environ["CHAT_VISION_MODEL"],
 )
 embeddings = OllamaEmbeddings(
     model=os.environ["EMBEDDING_MODEL"],
@@ -43,28 +42,5 @@ embeddings = OllamaEmbeddings(
 
 vector_store = InMemoryVectorStore(embeddings)
 
-
-def qwen3_remove_think_parse(ai_message: AIMessage) -> str:
-    return re.sub(r"<think>.*?</think>", "", ai_message.text(), flags=re.DOTALL).strip()
-
-
-llm_without_thought = llm | qwen3_remove_think_parse
-
 if __name__ == '__main__':
     print(llm.invoke("what's the capital of canada"))
-    print(
-        llm.invoke([{
-            "role": "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": "Describe this image:",
-                },
-                {
-                    "type": "image",
-                    "source_type": "base64",
-                    "data": samples.CAT_IMAGE_BASE64,
-                    "mime_type": "image/jpeg",
-                },
-            ],
-        }]))

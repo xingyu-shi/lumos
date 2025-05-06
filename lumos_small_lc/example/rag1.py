@@ -1,12 +1,13 @@
 from typing import List, TypedDict
 
 import bs4
-from langchain import hub
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
+from langchain_core.prompts import PromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.graph import START, StateGraph
 
+from lumos_small_lc import prompts
 from lumos_small_lc.base import vector_store, llm
 
 # Load and chunk contents of the blog
@@ -20,14 +21,15 @@ loader = WebBaseLoader(
 )
 docs = loader.load()
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=512,
+    chunk_overlap=128,
+    add_start_index=True,  # track index in original document
+)
 all_splits = text_splitter.split_documents(docs)
 
 # Index chunks
 _ = vector_store.add_documents(documents=all_splits)
-
-# Define prompt for question-answering
-prompt = hub.pull("rlm/rag-prompt")
 
 
 # Define state for application
@@ -46,7 +48,8 @@ def retrieve(state: State):
 def generate(state: State):
     docs_content = "\n\n".join(doc.page_content for doc in state["context"])
     print(docs_content)
-    messages = prompt.invoke({"question": state["question"], "context": docs_content})
+    messages = PromptTemplate.from_template(prompts.RAG_QUERY).invoke(
+        {"question": state["question"], "context": docs_content})
     response = llm.invoke(messages)
     return {"answer": response.content}
 
