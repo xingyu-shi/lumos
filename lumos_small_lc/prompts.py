@@ -44,4 +44,6 @@ Example output:
    The architecture and clothing suggest a modern European city in early autumn.
 """
 
+IMAGE_TO_TEXT_SIMPLE = """Please examine the provided image and generate a detailed description:"""
+
 RAG_QUERY = "You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\nQuestion: {question} \nContext: {context} \nAnswer:"

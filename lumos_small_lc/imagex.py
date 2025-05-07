@@ -3,13 +3,13 @@ from lumos_small_lc.base import llm_with_vision
 from lumos_small_lc.output_parser import remove_think_parse
 
 
-def describe_image(image_base64) -> str:
-    return (llm_with_vision | remove_think_parse).invoke([{
+def describe_image(image_base64, meta_data=None) -> str:
+    messages = [{
         "role": "system",
         "content": [
             {
                 "type": "text",
-                "text": prompts.IMAGE_TO_TEXT,
+                "text": prompts.IMAGE_TO_TEXT_SIMPLE,
             },
         ],
     }, {
@@ -22,10 +22,17 @@ def describe_image(image_base64) -> str:
                 "mime_type": "image/jpeg",
             },
         ],
-    }])
+    }]
+    if meta_data:
+        messages.append({
+            "type": "text",
+            "text": f"metadata about this image: {meta_data}",
+        })
+    return (llm_with_vision | remove_think_parse).invoke(messages)
 
 
 if __name__ == '__main__':
     from lumos_small_lc import samples
 
-    print(describe_image(samples.CAT_IMAGE_BASE64))
+    print(describe_image(samples.PIKCLE_IMAGE))
+    # print(describe_image(samples.CAT_IMAGE_BASE64))
